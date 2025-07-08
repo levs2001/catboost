@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+docker pull ghcr.io/catboost/build_env_no_cuda:ubuntu_22.04
+docker run --rm -t --platform linux/amd64 --network host --name builder -d ghcr.io/catboost/build_env_no_cuda:ubuntu_22.04
+
+docker cp ./catboost builder:/home/catboost
+
+
+
+docker exec -w /home/catboost/catboost/jvm-packages/catboost4j-prediction/ builder mvn compile -f pom.xml
+
+docker cp builder:/home/catboost/catboost/jvm-packages/catboost4j-prediction/target/classes/linux-x86_64/lib/libcatboost4j-prediction.so ./libcatboost4j-prediction.so
